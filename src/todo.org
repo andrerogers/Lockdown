@@ -1,0 +1,18 @@
+* Windows Rendering
+- Window's funtions are postfixed with A, to compile with unicode
+- Create window class with /WNDCLASSA/
+- Set the /WNDCLASS/ *style* to /CS_HREDRAW/ and /CS_VREDRAW/ so that the entire screen is redrawn if the screen is resized
+- /WNDCLASS/ *lpfnWndProc* is assigned a callback of the following prototype to handle Windows messages such as WM_CLOSE, WM_PAINT;
+/LRESULT CALLBACK function_name(HWND Window, UINT Message, WPARAM wparam, LPARAM lparam)/ 
+- /RegisterClass/ is used to register a /WNDCLASS/ to Windows; if no error occurs a /HWND/ window can be created
+- If the /HWND/ is allocated a message loop can be run (/while(Running)/) to peek, translate and dispatch messages; along with painting 
+to the screen, catching input and so on 
+
+* Windows Audio & Input
+- 
+
+* C++
+- Pointer aliasing is when two pointers *COULD* point to the same memory and the compiler doesn't know if a write to one
+of those pointers might effect a read from the other pointer.
+- When using bool to handle operations it is good practice to *ONLY* use bool if we need to know if it is 0 or 1, if we just need a 
+value that is not 0, using an /int32/ date type is simpler as the compiler will not force an optimization on the operation unnecessarily
