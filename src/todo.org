@@ -11,6 +11,7 @@ to the screen, catching input and so on
 * Windows Audio & Input
 - 
 
+
 * C++
 - Pointer aliasing is when two pointers *COULD* point to the same memory and the compiler doesn't know if a write to one
 of those pointers might effect a read from the other pointer.
