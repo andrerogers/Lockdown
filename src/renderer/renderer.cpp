@@ -36,17 +36,17 @@ int main() {
     // Vertices coordinates
     GLfloat vertices[] =
     { //     COORDINATES     /        COLORS/
-        -0.5f, 0.5f,  0.0f,	    1.0f, 0.0f, 0.0f,    0.0f, 0.0f,
-        -0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,    0.0f, 1.0f,
-        0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,    1.0f, 1.0f,
-        0.5f, 0.5f,  0.0f,		1.0f, 1.0f, 1.0f,    1.0f, 0.0f
+        -0.5f, -0.5f,  0.0f,	1.0f, 0.0f, 0.0f,    0.0f, 0.0f,
+        -0.5f, 0.5f, 0.0f,		0.0f, 1.0f, 0.0f,    0.0f, 1.0f,
+        0.5f, 0.5f, 0.0f,		0.0f, 0.0f, 1.0f,    1.0f, 1.0f,
+        0.5f, -0.5f,  0.0f,		1.0f, 1.0f, 1.0f,    1.0f, 0.0f
     };
 
     // Indices for vertices order
     GLuint indices[] =
     {
-        0, 1, 2,
-        0, 2, 3
+        0, 2, 1,
+        0, 3, 2 
     };
 
     // Create a GLFW window of WIDTH, and HEIGHT
@@ -107,7 +107,7 @@ int main() {
     // Texture
     int widthImg, heightImg, numColCh;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* bytes = stbi_load("..\\src\\resources\\textures\\tex.png", &widthImg, &heightImg, &numColCh, 0);
+    unsigned char* bytes = stbi_load("..\\src\\resources\\textures\\tex0.png", &widthImg, &heightImg, &numColCh, 0);
 
     GLuint texture;
 
@@ -128,7 +128,10 @@ int main() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+    // TODO
+    // buggy, if the file has 3 channels, should use GL_RGB, I think,
+    // failed when trying render with GL_RGBA
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthImg, heightImg, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(bytes);
