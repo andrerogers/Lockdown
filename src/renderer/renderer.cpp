@@ -10,6 +10,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
+
 #include "shader.h"
 #include "vertexBuffer.h"
 #include "elementBuffer.h"
@@ -30,19 +33,20 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLfloat vertices[] = {
-        -0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f,    // Lower Left Corner
-        0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f,     // Lower Right Corner
-        0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f,  // Upper Corner
-        -0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,    // Inner Left Corner
-        0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,     // Inner Right Corner
-        0.0f, -0.5f * float(sqrt(3)) * 2 / 3, 0.0f  // Inner Down
+    // Vertices coordinates
+    GLfloat vertices[] =
+    { //     COORDINATES     /        COLORS/
+        -0.5f, 0.5f,  0.0f,	    1.0f, 0.0f, 0.0f,    0.0f, 0.0f,
+        -0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,    0.0f, 1.0f,
+        0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,    1.0f, 1.0f,
+        0.5f, 0.5f,  0.0f,		1.0f, 1.0f, 1.0f,    1.0f, 0.0f
     };
 
-    GLuint indices[] = {
-        0, 3, 5, // Lower Left Triangle
-        3, 2, 4, // Lower Right Triangle
-        5, 4, 1  // Upper Triangle
+    // Indices for vertices order
+    GLuint indices[] =
+    {
+        0, 1, 2,
+        0, 2, 3
     };
 
     // Create a GLFW window of WIDTH, and HEIGHT
@@ -63,7 +67,7 @@ int main() {
     gladLoadGL();
 
     // Specify the viewport of OpenGL in the window
- // Here, from 0, 0 to WIDTH, HEIGHT
+    // Here, from 0, 0 to WIDTH, HEIGHT
     glViewport(0, 0, WIDTH, HEIGHT);
 
     // vertices[] => Vertex Shader -> Shape Assembly
@@ -74,27 +78,63 @@ int main() {
     Shader shader("..\\src\\resources\\shaders\\default.vs",
                   "..\\src\\resources\\shaders\\default.fs");
 
+    // Vertex Array Objects store pointers to the different
+    // attributes contained in a Vertex Buffer Object
     VAO vao;
+
+    // VAO should be bound before VBO's it points to
     vao.Bind();
 
+    // Vertex Buffer Objects contain that data that descibes
+    // a the different attributes of a 3D object
     VBO vbo(vertices, sizeof(vertices));
-    vbo.Bind();
-
     EBO ebo(indices, sizeof(indices));
+
     ebo.Bind();
 
-    vao.LinkVBO(vbo, 0);
+    vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
+    vao.LinkAttrib(vbo, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    vao.LinkAttrib(vbo, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     
     // Clean up so we don't make any changes
     // to the currently bound VAO or VBO
     // good practice..
-    vbo.Unbind();
-
-    // glBindVertexArray(0);
     vao.Unbind();
 
     // Make sure to unbind EBO after VAO
     ebo.Unbind();
+
+    // Texture
+    int widthImg, heightImg, numColCh;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* bytes = stbi_load("..\\src\\resources\\textures\\tex.png", &widthImg, &heightImg, &numColCh, 0);
+
+    GLuint texture;
+
+    // Generate a texture unit
+    glGenTextures(1, &texture);
+
+    // Assign the texture to a slot
+    // in the texture unit
+    glActiveTexture(GL_TEXTURE0);
+
+    // Bind the texture with its appropriate
+    // type, here 2D texture
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(bytes);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    GLuint texUni = glGetUniformLocation(shader.ID, "tex0");
 
     // Update loop
     while (!glfwWindowShouldClose(window)) {
@@ -104,13 +144,17 @@ int main() {
       // Clear the color and depth buffer
       glClear(GL_COLOR_BUFFER_BIT);
 
-      // glUseProgram(shaderProgram);
       shader.Activate();
 
-      // glBindVertexArray(VAO);
+      // Uniforms for a shader can only be set after
+      // the shader has been activated
+      glUniform1i(texUni, 0);
+      glBindTexture(GL_TEXTURE_2D, texture);
+
       vao.Bind();
-      // glDrawArrays(GL_TRIANGLES, 0, 3);
-      glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+
+      // glDrawArrays(GL_TRIANGLES, 0, 3); 
+      glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
 
       // Swap the back buffer with the front buffer
       glfwSwapBuffers(window);
@@ -120,18 +164,14 @@ int main() {
     }
 
     // Delete all objects created
-    // glDeleteVertexArrays(1, &VAO);
     vao.Delete();
-
-    // glDeleteBuffers(1, &VBO);
     vbo.Delete();
-    // glDeleteBuffers(1, &EBO);
     ebo.Delete();
-
-    // glDeleteProgram(shaderProgram);
     shader.Delete();
+    glDeleteTextures(1, &texture);
 
     glfwDestroyWindow(window);
+
     glfwTerminate();
 
     return 0;

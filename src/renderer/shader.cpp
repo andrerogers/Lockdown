@@ -41,10 +41,12 @@ Shader::Shader(const char *vertexFile, const char *fragmentFile) {
     // Source cannot be compiled on GPU, so compile
     // into machine code now
     glCompileShader(vertexShader);
+    compileErrors(vertexShader, "VERTEX");
 
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
     glCompileShader(fragmentShader);
+    compileErrors(fragmentShader, "FRAGMENT");
 
     // Create a shader program
     ID = glCreateProgram();
@@ -69,4 +71,27 @@ void Shader::Activate() {
 
 void Shader::Delete() {
     glDeleteProgram(ID);
+}
+
+void Shader::compileErrors(unsigned int shader, const char *type) {
+    GLint hasCompiled;
+    char infoLog[1024];
+
+    if(type != "PROGRAM") {
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &hasCompiled);
+
+        if(hasCompiled == GL_FALSE) {
+            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+            cout << "ERR: SHADER_COMPILATION_ERROR for " << type << endl;
+            cout << infoLog << endl;
+        }
+    } else {
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &hasCompiled);
+
+        if(hasCompiled == GL_FALSE) {
+            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+            cout << "ERR: SHADER_LINKING_ERROR for " << type << endl;
+            cout << infoLog << endl;
+        }
+    }
 }
