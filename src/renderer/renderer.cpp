@@ -245,7 +245,9 @@ int main() {
     glUniform3f(glGetUniformLocation(shader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
     Texture woodTexture("..\\src\\resources\\textures\\wood.png", GL_TEXTURE_2D, 0, GL_UNSIGNED_BYTE);
+    Texture woodSpecTexture("..\\src\\resources\\textures\\woodSpec.png", GL_TEXTURE_2D, 1, GL_UNSIGNED_BYTE);
     woodTexture.SetUniformUnit(shader, "tex0", 0);
+    woodSpecTexture.SetUniformUnit(shader, "tex1", 1);
 
     // float rotation = 0.0f;
     // double prevTime = glfwGetTime();
@@ -275,6 +277,7 @@ int main() {
     glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.m_position.x, camera.m_position.y, camera.m_position.z);
       camera.SetUniform(shader, "camMatrix");
       woodTexture.Bind();
+      woodSpecTexture.Bind();
       vao.Bind();
       // glDrawArrays(GL_TRIANGLES, 0, 3); 
       glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
@@ -297,6 +300,7 @@ int main() {
     ebo.Delete();
     shader.Delete();
     woodTexture.Delete();
+    woodSpecTexture.Delete();
 
     lightVAO.Delete();
     lightVBO.Delete();

@@ -20,8 +20,10 @@ Texture::Texture(const char *image, GLenum texType, GLuint slot,
 
   if (numColCh == 4)
     format = GL_RGBA;
-  else
+  else if(numColCh == 3)
     format = GL_RGB;
+  else if(numColCh == 1)
+    format = GL_RED;
 
   // Generate a texture unit
   glGenTextures(1, &ID);
