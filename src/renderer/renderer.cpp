@@ -28,25 +28,61 @@ const int HEIGHT = 800;
 
 // Pyramind
 // Vertices coordinates
-GLfloat vertices[] =
-{ //     COORDINATES     /        COLORS/
-    -0.5f, 0.0f,  0.5f,	    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,
-    -0.5f, 0.0f, -0.5f,		0.83f, 0.70f, 0.44f,    5.0f, 0.0f,
-    0.5f, 0.0f, -0.5f,		0.83f, 0.70f, 0.44f,    0.0f, 0.0f,
-    0.5f, 0.0f,  0.5f,		0.83f, 0.70f, 0.44f,    5.0f, 0.0f,
-    0.0f, 0.8f,  0.0f,		0.92f, 0.86f, 0.76f,    2.5f, 5.0f
-};
+GLfloat vertices[] = {
+    // COORDINATES      /        COLORS        /   TEXCOORDS  /       NORMALS
+    -0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    0.0f, -1.0f, 0.0f, // Bottom Side
+    -0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 5.0f,    0.0f, -1.0f, 0.0f, // Bottom Side
+    0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 5.0f,    0.0f, -1.0f, 0.0f, // Bottom Side
+    0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    0.0f, -1.0f, 0.0f, // Bottom Side
+
+    -0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    -0.8f, 0.5f, 0.0f, // Left Side
+    -0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    -0.8f, 0.5f, 0.0f, // Left Side
+    0.0f, 0.8f, 0.0f,    0.92f, 0.86f, 0.76f,    2.5f, 5.0f,    -0.8f, 0.5f, 0.0f, // Left Side
+
+    -0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    0.0f, 0.5f, -0.8f, // Non-facing Side
+    0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    0.0f, 0.5f, -0.8f, // Non-facing Side
+    0.0f, 0.8f, 0.0f,    0.92f, 0.86f, 0.76f,    2.5f, 5.0f,    0.0f, 0.5f, -0.8f, // Non-facing Side
+
+    0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    0.8f, 0.5f, 0.0f, // Right Side
+    0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    0.8f, 0.5f, 0.0f, // Right Side
+    0.0f, 0.8f, 0.0f,    0.92f, 0.86f, 0.76f,    2.5f, 5.0f,    0.8f, 0.5f, 0.0f, // Right Side
+
+    0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    0.0f, 0.5f, 0.8f, // Facing Side
+    -0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    0.0f, 0.5f, 0.8f, // Facing Side
+    0.0f, 0.8f, 0.0f,    0.92f, 0.86f, 0.76f,    2.5f, 5.0f,    0.0f, 0.5f, 0.8f, // Facing Side
+    };
 
 // Indices for vertices order
-GLuint indices[] =
-{
-    0, 1, 2,
-    0, 2, 3,
-    0, 1, 4,
-    1, 2, 4,
-    2, 3, 4,
-    3, 0, 4
-};
+GLuint indices[] = {
+    0, 1, 2, // Bottom Side
+    0, 2, 3, // Bottom Side
+    4, 6, 5, // Left Side
+    7, 9, 8, // Non-facing Side
+    10, 12, 11, // Right Side
+    13, 15, 14 //Facing Side
+    };
+
+// // Pyramind
+// // Vertices coordinates
+// GLfloat vertices[] =
+// { //     COORDINATES     /        COLORS/
+//     -0.5f, 0.0f,  0.5f,	    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,
+//     -0.5f, 0.0f, -0.5f,		0.83f, 0.70f, 0.44f,    5.0f, 0.0f,
+//     0.5f, 0.0f, -0.5f,		0.83f, 0.70f, 0.44f,    0.0f, 0.0f,
+//     0.5f, 0.0f,  0.5f,		0.83f, 0.70f, 0.44f,    5.0f, 0.0f,
+//     0.0f, 0.8f,  0.0f,		0.92f, 0.86f, 0.76f,    2.5f, 5.0f
+// };
+
+// // Indices for vertices order
+// GLuint indices[] =
+// {
+//     0, 1, 2,
+//     0, 2, 3,
+//     0, 1, 4,
+//     1, 2, 4,
+//     2, 3, 4,
+//     3, 0, 4
+// };
 
 // // Square
 // // Vertices coordinates
@@ -146,9 +182,10 @@ int main() {
 
     ebo.Bind();
 
-    vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
-    vao.LinkAttrib(vbo, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    vao.LinkAttrib(vbo, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 11 * sizeof(float), (void*)0);
+    vao.LinkAttrib(vbo, 1, 3, GL_FLOAT, 11 * sizeof(float), (void*)(3 * sizeof(float)));
+    vao.LinkAttrib(vbo, 2, 2, GL_FLOAT, 11 * sizeof(float), (void*)(6 * sizeof(float)));
+    vao.LinkAttrib(vbo, 3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float)));
     
     // Clean up so we don't make any changes
     // to the currently bound VAO or VBO
@@ -174,19 +211,23 @@ int main() {
 
     lightEBO.Unbind();
 
-    glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
+	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    glm::vec3 lightPos = glm::vec3(0.25f, 0.25f, 0.5f);
     glm::mat4 lightModel = glm::mat4(1.0f);
     lightModel = glm::translate(lightModel, lightPos);
 
-    glm::vec3 pyramidPos = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 objectPos = glm::vec3(0.0f, -0.5f, 0.0f);
     glm::mat4 objectModel = glm::mat4(1.0f);
-    objectModel = glm::translate(objectModel, pyramidPos);
+    objectModel = glm::translate(objectModel, objectPos);
 
     light.Activate();
     glUniformMatrix4fv(glGetUniformLocation(light.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
+    glUniform4f(glGetUniformLocation(light.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
     
     shader.Activate();
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(objectModel));
+    glUniform4f(glGetUniformLocation(shader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+    glUniform3f(glGetUniformLocation(shader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
     Texture woodTexture("..\\src\\resources\\textures\\tex0.png", GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE);
     woodTexture.SetUniformUnit(shader, "tex0", 0);
@@ -201,7 +242,7 @@ int main() {
     // Update loop
     while (!glfwWindowShouldClose(window)) {
       // Specify the bg color
-      glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+      glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 
       // Clear the color and depth buffer
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -216,6 +257,7 @@ int main() {
       camera.UpdateMatrix(45.0f, 0.1f, 100.0f);
 
       shader.Activate();
+    glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.m_position.x, camera.m_position.y, camera.m_position.z);
       camera.SetUniform(shader, "camMatrix");
       woodTexture.Bind();
       vao.Bind();
