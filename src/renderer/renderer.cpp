@@ -180,8 +180,8 @@ int main() {
     //            -> Fragment Shader -> Tests and Blending
     //            => pixel
 
-    Shader shader("..\\src\\resources\\shaders\\default.vs",
-                  "..\\src\\resources\\shaders\\default.fs");
+    Shader objectShader("..\\src\\resources\\shaders\\default.vs",
+                        "..\\src\\resources\\shaders\\default.fs");
 
     // Vertex Array Objects store pointers to the different
     // attributes contained in a Vertex Buffer Object
@@ -210,8 +210,8 @@ int main() {
     // Make sure to unbind EBO after VAO
     ebo.Unbind();
 
-    Shader light("..\\src\\resources\\shaders\\light.vs",
-                  "..\\src\\resources\\shaders\\light.fs");
+    Shader phongLight("..\\src\\resources\\shaders\\phong.vs",
+                  "..\\src\\resources\\shaders\\phong.fs");
 
     VAO lightVAO;
     lightVAO.Bind();
@@ -235,19 +235,19 @@ int main() {
     glm::mat4 objectModel = glm::mat4(1.0f);
     objectModel = glm::translate(objectModel, objectPos);
 
-    light.Activate();
-    glUniformMatrix4fv(glGetUniformLocation(light.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
-    glUniform4f(glGetUniformLocation(light.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+    phongLight.Activate();
+    glUniformMatrix4fv(glGetUniformLocation(phongLight.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
+    glUniform4f(glGetUniformLocation(phongLight.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
     
-    shader.Activate();
-    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(objectModel));
-    glUniform4f(glGetUniformLocation(shader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
-    glUniform3f(glGetUniformLocation(shader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+    objectShader.Activate();
+    glUniformMatrix4fv(glGetUniformLocation(objectShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(objectModel));
+    glUniform4f(glGetUniformLocation(objectShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+    glUniform3f(glGetUniformLocation(objectShader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
     Texture woodTexture("..\\src\\resources\\textures\\wood.png", GL_TEXTURE_2D, 0, GL_UNSIGNED_BYTE);
     Texture woodSpecTexture("..\\src\\resources\\textures\\woodSpec.png", GL_TEXTURE_2D, 1, GL_UNSIGNED_BYTE);
-    woodTexture.SetUniformUnit(shader, "tex0", 0);
-    woodSpecTexture.SetUniformUnit(shader, "tex1", 1);
+    woodTexture.SetUniformUnit(objectShader, "tex0", 0);
+    woodSpecTexture.SetUniformUnit(objectShader, "tex1", 1);
 
     // float rotation = 0.0f;
     // double prevTime = glfwGetTime();
@@ -264,26 +264,21 @@ int main() {
       // Clear the color and depth buffer
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      // double currentTime = glfwGetTime();
-      // if(currentTime - prevTime >= 1 / 60) {
-      //     rotation += 0.5f;
-      //     prevTime = currentTime;
-      // }
-
       camera.Inputs(window);
       camera.UpdateMatrix(45.0f, 0.1f, 100.0f);
 
-      shader.Activate();
-    glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.m_position.x, camera.m_position.y, camera.m_position.z);
-      camera.SetUniform(shader, "camMatrix");
+      objectShader.Activate();
+      glUniform3f(glGetUniformLocation(objectShader.ID, "camPos"),
+                  camera.m_position.x, camera.m_position.y,
+                  camera.m_position.z);
+      camera.SetUniform(objectShader, "camMatrix");
       woodTexture.Bind();
       woodSpecTexture.Bind();
       vao.Bind();
-      // glDrawArrays(GL_TRIANGLES, 0, 3); 
       glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
 
-      light.Activate();
-      camera.SetUniform(light, "camMatrix");
+      phongLight.Activate();
+      camera.SetUniform(phongLight, "camMatrix");
       lightVAO.Bind();
       glDrawElements(GL_TRIANGLES, sizeof(lightIndices) / sizeof(int), GL_UNSIGNED_INT, 0);
 
@@ -298,14 +293,14 @@ int main() {
     vao.Delete();
     vbo.Delete();
     ebo.Delete();
-    shader.Delete();
+    objectShader.Delete();
     woodTexture.Delete();
     woodSpecTexture.Delete();
 
     lightVAO.Delete();
     lightVBO.Delete();
     lightEBO.Delete();
-    light.Delete();
+    phongLight.Delete();
 
     glfwDestroyWindow(window);
 
