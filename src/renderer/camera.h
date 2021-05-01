@@ -24,6 +24,8 @@ public:
     glm::vec3 m_orientation = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 m_up = glm::vec3(0.0f, 1.0f, 0.0f);
 
+    glm::mat4 m_cameraMatrix = glm::mat4(1.0f);
+
     // Prevents the camera from jumping
     // around when first clicking left click
     bool m_firstClick = false;
@@ -35,7 +37,8 @@ public:
     float m_sensitivity = 100.0f;
 
     Camera(int _width, int _height, glm::vec3 _position);
-    void Matrix(float _fov, float _near, float _far, Shader& _shader, const char* _uniform);
-    void Inputs(GLFWwindow* _window);
+    void UpdateMatrix(float _fov, float _near, float _far);
+    void SetUniform(Shader &_shader, const char *_uniform);
+    void Inputs(GLFWwindow *_window);
 };
 #endif
