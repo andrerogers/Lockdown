@@ -25,42 +25,57 @@ using namespace std;
 const int WIDTH = 800;
 const int HEIGHT = 800;
 
-
-// Pyramind
 // Vertices coordinates
-GLfloat vertices[] = {
-    // COORDINATES      /        COLORS        /   TEXCOORDS  /       NORMALS
-    -0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    0.0f, -1.0f, 0.0f, // Bottom Side
-    -0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 5.0f,    0.0f, -1.0f, 0.0f, // Bottom Side
-    0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 5.0f,    0.0f, -1.0f, 0.0f, // Bottom Side
-    0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    0.0f, -1.0f, 0.0f, // Bottom Side
-
-    -0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    -0.8f, 0.5f, 0.0f, // Left Side
-    -0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    -0.8f, 0.5f, 0.0f, // Left Side
-    0.0f, 0.8f, 0.0f,    0.92f, 0.86f, 0.76f,    2.5f, 5.0f,    -0.8f, 0.5f, 0.0f, // Left Side
-
-    -0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    0.0f, 0.5f, -0.8f, // Non-facing Side
-    0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    0.0f, 0.5f, -0.8f, // Non-facing Side
-    0.0f, 0.8f, 0.0f,    0.92f, 0.86f, 0.76f,    2.5f, 5.0f,    0.0f, 0.5f, -0.8f, // Non-facing Side
-
-    0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    0.8f, 0.5f, 0.0f, // Right Side
-    0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    0.8f, 0.5f, 0.0f, // Right Side
-    0.0f, 0.8f, 0.0f,    0.92f, 0.86f, 0.76f,    2.5f, 5.0f,    0.8f, 0.5f, 0.0f, // Right Side
-
-    0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    0.0f, 0.5f, 0.8f, // Facing Side
-    -0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    0.0f, 0.5f, 0.8f, // Facing Side
-    0.0f, 0.8f, 0.0f,    0.92f, 0.86f, 0.76f,    2.5f, 5.0f,    0.0f, 0.5f, 0.8f, // Facing Side
-    };
+GLfloat vertices[] =
+{ //     COORDINATES     /        COLORS        /    TexCoord    /       NORMALS     //
+	-1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 0.0f,		0.0f, 1.0f, 0.0f,
+	-1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 1.0f,		0.0f, 1.0f, 0.0f,
+	 1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 1.0f,		0.0f, 1.0f, 0.0f,
+	 1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f, 0.0f
+};
 
 // Indices for vertices order
-GLuint indices[] = {
-    0, 1, 2, // Bottom Side
-    0, 2, 3, // Bottom Side
-    4, 6, 5, // Left Side
-    7, 9, 8, // Non-facing Side
-    10, 12, 11, // Right Side
-    13, 15, 14 //Facing Side
-    };
+GLuint indices[] =
+{
+	0, 1, 2,
+	0, 2, 3
+};
+
+// // Pyramind
+// // Vertices coordinates
+// GLfloat vertices[] = {
+//     // COORDINATES      /        COLORS        /   TEXCOORDS  /       NORMALS
+//     -0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    0.0f, -1.0f, 0.0f, // Bottom Side
+//     -0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 5.0f,    0.0f, -1.0f, 0.0f, // Bottom Side
+//     0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 5.0f,    0.0f, -1.0f, 0.0f, // Bottom Side
+//     0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    0.0f, -1.0f, 0.0f, // Bottom Side
+
+//     -0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    -0.8f, 0.5f, 0.0f, // Left Side
+//     -0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    -0.8f, 0.5f, 0.0f, // Left Side
+//     0.0f, 0.8f, 0.0f,    0.92f, 0.86f, 0.76f,    2.5f, 5.0f,    -0.8f, 0.5f, 0.0f, // Left Side
+
+//     -0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    0.0f, 0.5f, -0.8f, // Non-facing Side
+//     0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    0.0f, 0.5f, -0.8f, // Non-facing Side
+//     0.0f, 0.8f, 0.0f,    0.92f, 0.86f, 0.76f,    2.5f, 5.0f,    0.0f, 0.5f, -0.8f, // Non-facing Side
+
+//     0.5f, 0.0f, -0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    0.8f, 0.5f, 0.0f, // Right Side
+//     0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    0.8f, 0.5f, 0.0f, // Right Side
+//     0.0f, 0.8f, 0.0f,    0.92f, 0.86f, 0.76f,    2.5f, 5.0f,    0.8f, 0.5f, 0.0f, // Right Side
+
+//     0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    5.0f, 0.0f,    0.0f, 0.5f, 0.8f, // Facing Side
+//     -0.5f, 0.0f, 0.5f,    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,    0.0f, 0.5f, 0.8f, // Facing Side
+//     0.0f, 0.8f, 0.0f,    0.92f, 0.86f, 0.76f,    2.5f, 5.0f,    0.0f, 0.5f, 0.8f, // Facing Side
+//     };
+
+// // Indices for vertices order
+// GLuint indices[] = {
+//     0, 1, 2, // Bottom Side
+//     0, 2, 3, // Bottom Side
+//     4, 6, 5, // Left Side
+//     7, 9, 8, // Non-facing Side
+//     10, 12, 11, // Right Side
+//     13, 15, 14 //Facing Side
+//     };
 
 // // Pyramind
 // // Vertices coordinates
@@ -229,7 +244,7 @@ int main() {
     glUniform4f(glGetUniformLocation(shader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
     glUniform3f(glGetUniformLocation(shader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
-    Texture woodTexture("..\\src\\resources\\textures\\tex0.png", GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE);
+    Texture woodTexture("..\\src\\resources\\textures\\wood.png", GL_TEXTURE_2D, 0, GL_UNSIGNED_BYTE);
     woodTexture.SetUniformUnit(shader, "tex0", 0);
 
     // float rotation = 0.0f;
