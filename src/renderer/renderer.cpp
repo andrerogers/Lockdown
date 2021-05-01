@@ -18,7 +18,7 @@
 #include "elementBuffer.h"
 #include "attribObject.h"
 #include "texture.h"
-
+#include "camera.h"
 
 using namespace std;
 
@@ -137,6 +137,8 @@ int main() {
 
     glEnable(GL_DEPTH_TEST); 
 
+    Camera camera(WIDTH, HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
+
     // Update loop
     while (!glfwWindowShouldClose(window)) {
       // Specify the bg color
@@ -153,26 +155,29 @@ int main() {
           prevTime = currentTime;
       }
 
-      glm::mat4 model = glm::mat4(1.0f);
-      glm::mat4 view = glm::mat4(1.0f);
-      glm::mat4 proj = glm::mat4(1.0f);
+      camera.Inputs(window);
+      camera.Matrix(45.0f, 0.1f, 100.0f, shader, "camMatrix");
 
-      model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
-      view = glm::translate(view, glm::vec3(0.0f, -0.5f, -2.0f));
+      // glm::mat4 model = glm::mat4(1.0f);
+      // glm::mat4 view = glm::mat4(1.0f);
+      // glm::mat4 proj = glm::mat4(1.0f);
+
+      // model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+      // view = glm::translate(view, glm::vec3(0.0f, -0.5f, -2.0f));
 
       // using the fov, aspect ration, and the
       // near, and far plane we can describe
       // the clipped coordinates
-      proj = glm::perspective(glm::radians(45.0f), (float)(WIDTH / HEIGHT), 0.1f, 100.0f);
+      // proj = glm::perspective(glm::radians(45.0f), (float)(WIDTH / HEIGHT), 0.1f, 100.0f);
 
-      int modelLoc = glGetUniformLocation(shader.ID, "model");
-      glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+      // int modelLoc = glGetUniformLocation(shader.ID, "model");
+      // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-      int viewLoc = glGetUniformLocation(shader.ID, "view");
-      glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+      // int viewLoc = glGetUniformLocation(shader.ID, "view");
+      // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-      int projLoc = glGetUniformLocation(shader.ID, "proj");
-      glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
+      // int projLoc = glGetUniformLocation(shader.ID, "proj");
+      // glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
       
       woodTexture.Bind();
 
