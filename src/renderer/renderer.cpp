@@ -9,14 +9,16 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "shader.h"
 #include "vertexBuffer.h"
 #include "elementBuffer.h"
 #include "attribObject.h"
+#include "texture.h"
+
 
 using namespace std;
 
@@ -33,21 +35,44 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    // Pyramind
     // Vertices coordinates
     GLfloat vertices[] =
     { //     COORDINATES     /        COLORS/
-        -0.5f, -0.5f,  0.0f,	1.0f, 0.0f, 0.0f,    0.0f, 0.0f,
-        -0.5f, 0.5f, 0.0f,		0.0f, 1.0f, 0.0f,    0.0f, 1.0f,
-        0.5f, 0.5f, 0.0f,		0.0f, 0.0f, 1.0f,    1.0f, 1.0f,
-        0.5f, -0.5f,  0.0f,		1.0f, 1.0f, 1.0f,    1.0f, 0.0f
+        -0.5f, 0.0f,  0.5f,	    0.83f, 0.70f, 0.44f,    0.0f, 0.0f,
+        -0.5f, 0.0f, -0.5f,		0.83f, 0.70f, 0.44f,    5.0f, 0.0f,
+        0.5f, 0.0f, -0.5f,		0.83f, 0.70f, 0.44f,    0.0f, 0.0f,
+        0.5f, 0.0f,  0.5f,		0.83f, 0.70f, 0.44f,    5.0f, 0.0f,
+        0.0f, 0.8f,  0.0f,		0.92f, 0.86f, 0.76f,    2.5f, 5.0f
     };
 
     // Indices for vertices order
     GLuint indices[] =
     {
-        0, 2, 1,
-        0, 3, 2 
+        0, 1, 2,
+        0, 2, 3,
+        0, 1, 4,
+        1, 2, 4,
+        2, 3, 4,
+        3, 0, 4
     };
+
+    // // Square
+    // // Vertices coordinates
+    // GLfloat vertices[] =
+    // { //     COORDINATES     /        COLORS/
+    //     -0.5f, -0.5f,  0.0f,	1.0f, 0.0f, 0.0f,    0.0f, 0.0f,
+    //     -0.5f, 0.5f, 0.0f,		0.0f, 1.0f, 0.0f,    0.0f, 1.0f,
+    //     0.5f, 0.5f, 0.0f,		0.0f, 0.0f, 1.0f,    1.0f, 1.0f,
+    //     0.5f, -0.5f,  0.0f,		1.0f, 1.0f, 1.0f,    1.0f, 0.0f
+    // };
+
+    // // Indices for vertices order
+    // GLuint indices[] =
+    // {
+    //     0, 2, 1,
+    //     0, 3, 2 
+    // };
 
     // Create a GLFW window of WIDTH, and HEIGHT
     GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Lockdown", NULL, NULL);
@@ -104,40 +129,13 @@ int main() {
     // Make sure to unbind EBO after VAO
     ebo.Unbind();
 
-    // Texture
-    int widthImg, heightImg, numColCh;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char* bytes = stbi_load("..\\src\\resources\\textures\\tex0.png", &widthImg, &heightImg, &numColCh, 0);
+    Texture woodTexture("..\\src\\resources\\textures\\tex0.png", GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE);
+    woodTexture.SetUniformUnit(shader, "tex0", 0);
 
-    GLuint texture;
+    float rotation = 0.0f;
+    double prevTime = glfwGetTime();
 
-    // Generate a texture unit
-    glGenTextures(1, &texture);
-
-    // Assign the texture to a slot
-    // in the texture unit
-    glActiveTexture(GL_TEXTURE0);
-
-    // Bind the texture with its appropriate
-    // type, here 2D texture
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    // TODO
-    // buggy, if the file has 3 channels, should use GL_RGB, I think,
-    // failed when trying render with GL_RGBA
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthImg, heightImg, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    stbi_image_free(bytes);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    GLuint texUni = glGetUniformLocation(shader.ID, "tex0");
+    glEnable(GL_DEPTH_TEST); 
 
     // Update loop
     while (!glfwWindowShouldClose(window)) {
@@ -145,14 +143,38 @@ int main() {
       glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
       // Clear the color and depth buffer
-      glClear(GL_COLOR_BUFFER_BIT);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       shader.Activate();
 
-      // Uniforms for a shader can only be set after
-      // the shader has been activated
-      glUniform1i(texUni, 0);
-      glBindTexture(GL_TEXTURE_2D, texture);
+      double currentTime = glfwGetTime();
+      if(currentTime - prevTime >= 1 / 60) {
+          rotation += 0.5f;
+          prevTime = currentTime;
+      }
+
+      glm::mat4 model = glm::mat4(1.0f);
+      glm::mat4 view = glm::mat4(1.0f);
+      glm::mat4 proj = glm::mat4(1.0f);
+
+      model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+      view = glm::translate(view, glm::vec3(0.0f, -0.5f, -2.0f));
+
+      // using the fov, aspect ration, and the
+      // near, and far plane we can describe
+      // the clipped coordinates
+      proj = glm::perspective(glm::radians(45.0f), (float)(WIDTH / HEIGHT), 0.1f, 100.0f);
+
+      int modelLoc = glGetUniformLocation(shader.ID, "model");
+      glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+      int viewLoc = glGetUniformLocation(shader.ID, "view");
+      glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+      int projLoc = glGetUniformLocation(shader.ID, "proj");
+      glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
+      
+      woodTexture.Bind();
 
       vao.Bind();
 
@@ -171,7 +193,7 @@ int main() {
     vbo.Delete();
     ebo.Delete();
     shader.Delete();
-    glDeleteTextures(1, &texture);
+    woodTexture.Delete();
 
     glfwDestroyWindow(window);
 
