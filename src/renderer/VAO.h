@@ -1,4 +1,4 @@
-#ifndef VERTEX_BUFFER_H
+#ifndef VAO_H
 /* ========================================================================
    $File: $
    $Date: $
@@ -7,16 +7,20 @@
    $Notice: (C) Copyright 2020 by Dre Codes, Inc. All Rights Reserved. $
    ======================================================================== */
 
-#define VERTEX_BUFFER_H
-#include "bufferObject.h"
+#define VAO_H
+#include <glad/glad.h>
+#include "VBO.h"
 
-class VBO : BufferObject {
+class VAO {
 public:
-    VBO(GLfloat* data, GLsizeiptr size);
+  GLuint ID;
+  VAO();
 
-    void Bind();
-    void Unbind();
-    void Delete();
+  void LinkAttrib(VBO& vbo, GLuint layout, GLuint numComponents, GLenum type,
+                  GLsizeiptr stride, void* offset);
+  void Bind();
+  void Unbind();
+  void Delete();
 };
 
 #endif

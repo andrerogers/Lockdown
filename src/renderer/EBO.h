@@ -1,4 +1,4 @@
-#ifndef VAO_H
+#ifndef EBO_H
 /* ========================================================================
    $File: $
    $Date: $
@@ -7,20 +7,20 @@
    $Notice: (C) Copyright 2020 by Dre Codes, Inc. All Rights Reserved. $
    ======================================================================== */
 
-#define VAO_H
-#include <glad/glad.h>
-#include "vertexBuffer.h"
+#define EBO_H
+#include <vector>
+#include "bufferObject.h"
 
-class VAO {
+using namespace std;
+
+class EBO : BufferObject {
 public:
-  GLuint ID;
-  VAO();
+    EBO(vector<GLuint>& indices);
+    EBO(GLuint* data, GLsizeiptr size);
 
-  void LinkAttrib(VBO& vbo, GLuint layout, GLuint numComponents, GLenum type,
-                  GLsizeiptr stride, void* offset);
-  void Bind();
-  void Unbind();
-  void Delete();
+    void Bind();
+    void Unbind();
+    void Delete();
 };
 
 #endif

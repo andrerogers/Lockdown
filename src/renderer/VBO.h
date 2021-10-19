@@ -1,3 +1,4 @@
+#ifndef VBO_H
 /* ========================================================================
    $File: $
    $Date: $
@@ -5,12 +6,22 @@
    $Creator: Andre Rogers $
    $Notice: (C) Copyright 2020 by Dre Codes, Inc. All Rights Reserved. $
    ======================================================================== */
-#include "elementBuffer.h"
 
-EBO::EBO(GLuint *data, GLsizeiptr size) : BufferObject {data, size} {}
+#define VBO_H
+#include <vector>
 
-void EBO::Bind() { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID); }
+#include "bufferObject.h"
 
-void EBO::Unbind() { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
+using namespace std;
 
-void EBO::Delete() { glDeleteBuffers(1, &ID); }
+class VBO : BufferObject {
+public:
+    VBO(GLfloat* data, GLsizeiptr size);
+    VBO(vector<Vertex>& vertices);
+
+    void Bind();
+    void Unbind();
+    void Delete();
+};
+
+#endif

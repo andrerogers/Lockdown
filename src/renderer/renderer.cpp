@@ -14,9 +14,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "shader.h"
-#include "vertexBuffer.h"
-#include "elementBuffer.h"
-#include "attribObject.h"
+#include "mesh.h"
 #include "texture.h"
 #include "camera.h"
 
@@ -26,12 +24,19 @@ const int WIDTH = 800;
 const int HEIGHT = 800;
 
 // Vertices coordinates
-GLfloat vertices[] =
-{ //     COORDINATES     /        COLORS        /    TexCoord    /       NORMALS     //
-	-1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 0.0f,		0.0f, 1.0f, 0.0f,
-	-1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 1.0f,		0.0f, 1.0f, 0.0f,
-	 1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 1.0f,		0.0f, 1.0f, 0.0f,
-	 1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f, 0.0f
+// GLfloat vertices[] =
+// { //     COORDINATES     /        COLORS        /    TexCoord    /       NORMALS     //
+// 	-1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 0.0f,		0.0f, 1.0f, 0.0f,
+// 	-1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		0.0f, 1.0f,		0.0f, 1.0f, 0.0f,
+// 	 1.0f, 0.0f, -1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 1.0f,		0.0f, 1.0f, 0.0f,
+// 	 1.0f, 0.0f,  1.0f,		0.0f, 0.0f, 0.0f,		1.0f, 0.0f,		0.0f, 1.0f, 0.0f
+// };
+Vertex vertices[] =
+{ //               COORDINATES           /            COLORS          /           TexCoord         /       NORMALS         //
+	Vertex{glm::vec3(-1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
+	Vertex{glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f)},
+	Vertex{glm::vec3( 1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)},
+	Vertex{glm::vec3( 1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)}
 };
 
 // Indices for vertices order
@@ -116,16 +121,28 @@ GLuint indices[] =
 //     0, 3, 2 
 // };
 
-GLfloat lightVertices[] =
+// GLfloat lightVertices[] =
+// { //     COORDINATES     //
+// 	-0.1f, -0.1f,  0.1f,
+// 	-0.1f, -0.1f, -0.1f,
+// 	 0.1f, -0.1f, -0.1f,
+// 	 0.1f, -0.1f,  0.1f,
+// 	-0.1f,  0.1f,  0.1f,
+// 	-0.1f,  0.1f, -0.1f,
+// 	 0.1f,  0.1f, -0.1f,
+// 	 0.1f,  0.1f,  0.1f
+// };
+
+Vertex lightVertices[] =
 { //     COORDINATES     //
-	-0.1f, -0.1f,  0.1f,
-	-0.1f, -0.1f, -0.1f,
-	 0.1f, -0.1f, -0.1f,
-	 0.1f, -0.1f,  0.1f,
-	-0.1f,  0.1f,  0.1f,
-	-0.1f,  0.1f, -0.1f,
-	 0.1f,  0.1f, -0.1f,
-	 0.1f,  0.1f,  0.1f
+	Vertex{glm::vec3(-0.1f, -0.1f,  0.1f)},
+	Vertex{glm::vec3(-0.1f, -0.1f, -0.1f)},
+	Vertex{glm::vec3(0.1f, -0.1f, -0.1f)},
+	Vertex{glm::vec3(0.1f, -0.1f,  0.1f)},
+	Vertex{glm::vec3(-0.1f,  0.1f,  0.1f)},
+	Vertex{glm::vec3(-0.1f,  0.1f, -0.1f)},
+	Vertex{glm::vec3(0.1f,  0.1f, -0.1f)},
+	Vertex{glm::vec3(0.1f,  0.1f,  0.1f)}
 };
 
 GLuint lightIndices[] =
@@ -143,7 +160,6 @@ GLuint lightIndices[] =
 	4, 5, 6,
 	4, 6, 7
 };
-
 int main() {
     // Initialize GLFW
     glfwInit();
@@ -175,6 +191,13 @@ int main() {
     // Here, from 0, 0 to WIDTH, HEIGHT
     glViewport(0, 0, WIDTH, HEIGHT);
 
+    Texture textures[] = {
+      Texture("..\\src\\resources\\textures\\wood.png", "diffuse", 0, GL_UNSIGNED_BYTE),
+      Texture("..\\src\\resources\\textures\\woodSpec.png", "specular", 0, GL_UNSIGNED_BYTE),
+    };
+    // woodTexture.SetUniformUnit(objectShader, "tex0", 0);
+    // woodSpecTexture.SetUniformUnit(objectShader, "tex1", 1);
+
     // vertices[] => Vertex Shader -> Shape Assembly
     //            -> Geometry Shader -> Rasterizaton
     //            -> Fragment Shader -> Tests and Blending
@@ -182,51 +205,22 @@ int main() {
 
     Shader objectShader("..\\src\\resources\\shaders\\default.vs",
                         "..\\src\\resources\\shaders\\default.fs");
+    std::vector <Vertex> verts(vertices, vertices + sizeof(vertices) / sizeof(Vertex));
+    std::vector <GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
+    std::vector <Texture> tex(textures, textures + sizeof(textures) / sizeof(Texture));
 
-    // Vertex Array Objects store pointers to the different
-    // attributes contained in a Vertex Buffer Object
-    VAO vao;
-
-    // VAO should be bound before VBO's it points to
-    vao.Bind();
-
-    // Vertex Buffer Objects contain that data that descibes
-    // a the different attributes of a 3D object
-    VBO vbo(vertices, sizeof(vertices));
-    EBO ebo(indices, sizeof(indices));
-
-    ebo.Bind();
-
-    vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, 11 * sizeof(float), (void*)0);
-    vao.LinkAttrib(vbo, 1, 3, GL_FLOAT, 11 * sizeof(float), (void*)(3 * sizeof(float)));
-    vao.LinkAttrib(vbo, 2, 2, GL_FLOAT, 11 * sizeof(float), (void*)(6 * sizeof(float)));
-    vao.LinkAttrib(vbo, 3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float)));
-    
-    // Clean up so we don't make any changes
-    // to the currently bound VAO or VBO
-    // good practice..
-    vao.Unbind();
-
-    // Make sure to unbind EBO after VAO
-    ebo.Unbind();
+    // Create floor mesh
+    Mesh floor(verts, ind, tex);
 
     Shader phongLight("..\\src\\resources\\shaders\\phong.vs",
                   "..\\src\\resources\\shaders\\phong.fs");
+    std::vector <Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(Vertex));
+    std::vector <GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
 
-    VAO lightVAO;
-    lightVAO.Bind();
+    // Crate light mesh
+    Mesh light(lightVerts, lightInd, tex);
 
-    VBO lightVBO(lightVertices, sizeof(lightVertices));
-    EBO lightEBO(lightIndices, sizeof(lightIndices));
-    lightEBO.Bind();
-
-    lightVAO.LinkAttrib(lightVBO, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
-
-    lightVAO.Unbind();
-
-    lightEBO.Unbind();
-
-	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     glm::vec3 lightPos = glm::vec3(0.25f, 0.25f, 0.5f);
     glm::mat4 lightModel = glm::mat4(1.0f);
     lightModel = glm::translate(lightModel, lightPos);
@@ -244,14 +238,6 @@ int main() {
     glUniform4f(glGetUniformLocation(objectShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
     glUniform3f(glGetUniformLocation(objectShader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
-    Texture woodTexture("..\\src\\resources\\textures\\wood.png", GL_TEXTURE_2D, 0, GL_UNSIGNED_BYTE);
-    Texture woodSpecTexture("..\\src\\resources\\textures\\woodSpec.png", GL_TEXTURE_2D, 1, GL_UNSIGNED_BYTE);
-    woodTexture.SetUniformUnit(objectShader, "tex0", 0);
-    woodSpecTexture.SetUniformUnit(objectShader, "tex1", 1);
-
-    // float rotation = 0.0f;
-    // double prevTime = glfwGetTime();
-
     glEnable(GL_DEPTH_TEST); 
 
     Camera camera(WIDTH, HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
@@ -267,20 +253,8 @@ int main() {
       camera.Inputs(window);
       camera.UpdateMatrix(45.0f, 0.1f, 100.0f);
 
-      objectShader.Activate();
-      glUniform3f(glGetUniformLocation(objectShader.ID, "camPos"),
-                  camera.m_position.x, camera.m_position.y,
-                  camera.m_position.z);
-      camera.SetUniform(objectShader, "camMatrix");
-      woodTexture.Bind();
-      woodSpecTexture.Bind();
-      vao.Bind();
-      glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
-
-      phongLight.Activate();
-      camera.SetUniform(phongLight, "camMatrix");
-      lightVAO.Bind();
-      glDrawElements(GL_TRIANGLES, sizeof(lightIndices) / sizeof(int), GL_UNSIGNED_INT, 0);
+      floor.Draw(objectShader, camera);
+      light.Draw(phongLight, camera);
 
       // Swap the back buffer with the front buffer
       glfwSwapBuffers(window);
@@ -288,19 +262,6 @@ int main() {
       // Poll GLFW Events
       glfwPollEvents();
     }
-
-    // Delete all objects created
-    vao.Delete();
-    vbo.Delete();
-    ebo.Delete();
-    objectShader.Delete();
-    woodTexture.Delete();
-    woodSpecTexture.Delete();
-
-    lightVAO.Delete();
-    lightVBO.Delete();
-    lightEBO.Delete();
-    phongLight.Delete();
 
     glfwDestroyWindow(window);
 
