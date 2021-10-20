@@ -12,6 +12,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <ostream>
 
 #include "shader.h"
 #include "mesh.h"
@@ -33,10 +34,10 @@ const int HEIGHT = 800;
 // };
 Vertex vertices[] =
 { //               COORDINATES           /            COLORS          /           TexCoord         /       NORMALS         //
-	Vertex{glm::vec3(-1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
-	Vertex{glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f)},
-	Vertex{glm::vec3( 1.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)},
-	Vertex{glm::vec3( 1.0f, 0.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)}
+	Vertex{glm::vec3(-1.0f, 0.0f,  1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
+	Vertex{glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f)},
+	Vertex{glm::vec3( 1.0f, 0.0f, -1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)},
+	Vertex{glm::vec3( 1.0f, 0.0f,  1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)}
 };
 
 // Indices for vertices order
@@ -193,7 +194,7 @@ int main() {
 
     Texture textures[] = {
       Texture("..\\src\\resources\\textures\\wood.png", "diffuse", 0, GL_UNSIGNED_BYTE),
-      Texture("..\\src\\resources\\textures\\woodSpec.png", "specular", 0, GL_UNSIGNED_BYTE),
+      Texture("..\\src\\resources\\textures\\woodSpec.png", "specular", 1, GL_UNSIGNED_BYTE),
     };
     // woodTexture.SetUniformUnit(objectShader, "tex0", 0);
     // woodSpecTexture.SetUniformUnit(objectShader, "tex1", 1);
@@ -212,8 +213,8 @@ int main() {
     // Create floor mesh
     Mesh floor(verts, ind, tex);
 
-    Shader phongLight("..\\src\\resources\\shaders\\phong.vs",
-                  "..\\src\\resources\\shaders\\phong.fs");
+    Shader lightShader("..\\src\\resources\\shaders\\light.vs",
+                  "..\\src\\resources\\shaders\\light.fs");
     std::vector <Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(Vertex));
     std::vector <GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
 
@@ -221,17 +222,19 @@ int main() {
     Mesh light(lightVerts, lightInd, tex);
 
     glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    glm::vec3 lightPos = glm::vec3(0.25f, 0.25f, 0.5f);
+    glm::vec3 lightPos = glm::vec3(0.0f, 0.25f, 0.0f);
     glm::mat4 lightModel = glm::mat4(1.0f);
+    lightModel = glm::scale(lightModel, glm::vec3(0.25f));
     lightModel = glm::translate(lightModel, lightPos);
+
 
     glm::vec3 objectPos = glm::vec3(0.0f, -0.5f, 0.0f);
     glm::mat4 objectModel = glm::mat4(1.0f);
     objectModel = glm::translate(objectModel, objectPos);
 
-    phongLight.Activate();
-    glUniformMatrix4fv(glGetUniformLocation(phongLight.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
-    glUniform4f(glGetUniformLocation(phongLight.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+    lightShader.Activate();
+    glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
+    glUniform4f(glGetUniformLocation(lightShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
     
     objectShader.Activate();
     glUniformMatrix4fv(glGetUniformLocation(objectShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(objectModel));
@@ -254,7 +257,7 @@ int main() {
       camera.UpdateMatrix(45.0f, 0.1f, 100.0f);
 
       floor.Draw(objectShader, camera);
-      light.Draw(phongLight, camera);
+      light.Draw(lightShader, camera);
 
       // Swap the back buffer with the front buffer
       glfwSwapBuffers(window);
