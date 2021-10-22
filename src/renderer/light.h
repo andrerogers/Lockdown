@@ -15,7 +15,8 @@ class Light {
 public:
   vec4 color;
   vec3 pos;
-  mat4 model;
+  mat4 model = mat4(1.0f);
+  float speed = 0.04f;
 
   // Initializes the mesh
   Light(vec4 color, vec3 pos, Mesh& mesh);

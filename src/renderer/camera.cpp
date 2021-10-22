@@ -3,7 +3,7 @@
 Camera::Camera(int _width, int _height, glm::vec3 _position)
     : m_width(_width), m_height(_height), m_position(_position) {}
 
-void Camera::SetUniform(Shader &_shader, const char *_uniform) {
+void Camera::SetMatrix(Shader &_shader, const char *_uniform) {
     glUniformMatrix4fv(glGetUniformLocation(_shader.ID, _uniform), 1, GL_FALSE, glm::value_ptr(m_cameraMatrix));
 }
 

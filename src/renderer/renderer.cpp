@@ -253,7 +253,6 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         light.HandleInput(window);
-        cout << light.pos.x << " " << light.pos.y << " " << light.pos.z << endl;
         glUniform3f(glGetUniformLocation(objectShader.ID, "lightPos"), light.pos.x, light.pos.y, light.pos.z);
 
         camera.Inputs(window);

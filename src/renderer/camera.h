@@ -38,7 +38,7 @@ public:
 
     Camera(int _width, int _height, glm::vec3 _position);
     void UpdateMatrix(float _fov, float _near, float _far);
-    void SetUniform(Shader &_shader, const char *_uniform);
+    void SetMatrix(Shader &_shader, const char *_uniform);
     void Inputs(GLFWwindow *_window);
 };
 #endif
