@@ -1,5 +1,5 @@
-#ifndef MESH_CLASS_H
-#define MESH_CLASS_H
+#ifndef MESH_H
+#define MESH_H
 
 #include <string>
 
@@ -26,4 +26,4 @@ public:
   void Draw(Shader& shader, Camera& camera);
 };
 
-#endif MESH_CLASS_H
+#endif MESH_H

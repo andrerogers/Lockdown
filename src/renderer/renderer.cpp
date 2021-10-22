@@ -14,10 +14,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <ostream>
 
-#include "shader.h"
-#include "mesh.h"
-#include "texture.h"
-#include "camera.h"
+#include "light.h"
 
 using namespace std;
 
@@ -161,6 +158,7 @@ GLuint lightIndices[] =
 	4, 5, 6,
 	4, 6, 7
 };
+
 int main() {
     // Initialize GLFW
     glfwInit();
@@ -219,22 +217,16 @@ int main() {
     std::vector <GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
 
     // Crate light mesh
-    Mesh light(lightVerts, lightInd, tex);
-
+    Mesh lightMesh(lightVerts, lightInd, tex);
     glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     glm::vec3 lightPos = glm::vec3(0.0f, 0.25f, 0.0f);
-    glm::mat4 lightModel = glm::mat4(1.0f);
-    lightModel = glm::scale(lightModel, glm::vec3(0.25f));
-    lightModel = glm::translate(lightModel, lightPos);
-
+    Light light(lightColor, lightPos, lightMesh);
+    light.Scale(0.25f);
+    light.Translate(lightPos);
 
     glm::vec3 objectPos = glm::vec3(0.0f, -0.5f, 0.0f);
     glm::mat4 objectModel = glm::mat4(1.0f);
     objectModel = glm::translate(objectModel, objectPos);
-
-    lightShader.Activate();
-    glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
-    glUniform4f(glGetUniformLocation(lightShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
     
     objectShader.Activate();
     glUniformMatrix4fv(glGetUniformLocation(objectShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(objectModel));
@@ -247,23 +239,34 @@ int main() {
 
     // Update loop
     while (!glfwWindowShouldClose(window)) {
-      // Specify the bg color
-      glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+        if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwDestroyWindow(window);
 
-      // Clear the color and depth buffer
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glfwTerminate();
+            exit(0);
+        }
 
-      camera.Inputs(window);
-      camera.UpdateMatrix(45.0f, 0.1f, 100.0f);
+        // Specify the bg color
+        glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 
-      floor.Draw(objectShader, camera);
-      light.Draw(lightShader, camera);
+        // Clear the color and depth buffer
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      // Swap the back buffer with the front buffer
-      glfwSwapBuffers(window);
+        light.HandleInput(window);
+        cout << light.pos.x << " " << light.pos.y << " " << light.pos.z << endl;
+        glUniform3f(glGetUniformLocation(objectShader.ID, "lightPos"), light.pos.x, light.pos.y, light.pos.z);
 
-      // Poll GLFW Events
-      glfwPollEvents();
+        camera.Inputs(window);
+        camera.UpdateMatrix(45.0f, 0.1f, 100.0f);
+
+        floor.Draw(objectShader, camera);
+        light.Draw(lightShader, camera);
+
+        // Swap the back buffer with the front buffer
+        glfwSwapBuffers(window);
+
+        // Poll GLFW Events
+        glfwPollEvents();
     }
 
     glfwDestroyWindow(window);
