@@ -17,11 +17,11 @@
 class Texture {
 public:
     GLuint ID;
-    GLenum type;
     GLuint unit;
     GLenum format;
+    const char* type;
 
-    Texture(const char* image, GLenum texType, GLuint slot, GLenum pixelType);
+    Texture(const char* image, const char* texType, GLuint slot, GLenum pixelType);
     void Bind();
     void Unbind();
     void Delete();
